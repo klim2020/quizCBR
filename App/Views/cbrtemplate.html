@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}{% endblock %}</title>
+    <script src="https://kit.fontawesome.com/071691e170.js" crossorigin="anonymous"></script>
+		 <!-- fontawesome -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+
+	 <!-- Compiled and minified CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+</head>
+<body>
+
+
+	<div class="row">
+		<div class = "col s6 offset-s3">
+
+			<p>Выберите дату для показа катировок</p>
+
+		</div>
+		<div class= "col s6 offset-s3"><input name = "date" type="text" class="datepicker"></div>
+		 <button id="submitbutton" class="col s1 btn  waves-effect waves-light" type="submit" name="action">
+			получить
+		</button>
+
+
+	</div>
+    <div class="row info" style="opacity: 0;transition: opacity 1s ease-out .2s;">
+        <div class="col s6 offset-s3">
+            <div class="card-panel lime lighten-2">
+                <span class="black-text">
+
+
+                </span>
+            </div>
+        </div>
+    </div>
+    {% block body %}
+    {% endblock %}
+	<script>
+
+	 document.addEventListener('DOMContentLoaded', function() {
+		var elems = document.querySelectorAll('.datepicker');
+		var instances = M.Datepicker.init(elems,{
+										 format: 'dd/mm/yyyy'
+										 });
+
+	});
+
+	const buildURLQuery = obj =>
+      Object.entries(obj)
+            .map(pair => pair.map(encodeURIComponent).join('='))
+            .join('&');
+
+	var ffs = buildURLQuery({name: 'John', gender: 'male'});
+
+		// Пример отправки POST запроса:
+	async function postData(url = '', data = {}) {
+		// Default options are marked with *
+		const response = await fetch(url+((typeof data == "undefined")?'':'?'+buildURLQuery(data)), {
+			method: 'GET', // *GET, POST, PUT, DELETE, etc.
+			mode: 'cors', // no-cors, *cors, same-origin
+			cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+			credentials: 'same-origin', // include, *same-origin, omit
+			headers: {
+				'Content-Type': 'application/json'
+			// 'Content-Type': 'application/x-www-form-urlencoded',
+			},
+			redirect: 'follow', // manual, *follow, error
+			referrerPolicy: 'no-referrer', // no-referrer, *client
+			//body: JSON.stringify(data) // body data type must match "Content-Type" header
+		});
+		return await response.json(); // parses JSON response into native JavaScript objects
+	}
+
+
+
+	//document.
+
+	document.querySelector('#submitbutton').addEventListener('click',e=>{
+        document.querySelector(".info").style.opacity=0;
+		postData('getdata', { answer: document.querySelector('.datepicker').value })
+			.then((data) => {
+				console.log(data); // JSON data parsed by `response.json()` call
+
+                var up = `<i class="fas fa-level-up-alt" style = "color:green;"></i>`;
+                var down = `<i class="fas fa-level-down-alt" style = "color:red;"></i>`;
+                var equal = `<i class="fas fa-equals" style = "color:black;"></i>`;
+                var hyml = "";
+
+
+                var main = document.querySelector(".info div div span");
+                main.innerHTML = "";
+                data.value.forEach( function( item ) {
+                    hyml = "";
+                    hyml += `Kурс ${item.full} на ${item.date} = ${item.val1}  за ${item.nominal} ${item.name} - динамика - `;
+                    switch (item.impulse.toLowerCase()) {
+                        case 'equal':
+                            hyml += equal;
+                            break;
+                        case 'up':
+                            hyml += up;
+                            break;
+                        case 'down':
+                            hyml += down;
+                            break;
+                    }
+                    hyml+= `</br>`
+                    console.log( item );
+                    main.innerHTML += hyml;
+                });
+                document.querySelector(".info").style.opacity=1;
+
+			});
+
+
+		});
+
+
+
+
+	</script>
+	<!-- Compiled and minified JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+
+</body>
+</html>
