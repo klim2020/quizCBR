@@ -58,4 +58,8 @@ class Getcbr extends \Core\Controller
 		echo json_encode($data);
 
 	}
+	public function test(){
+        header('Content-Type: application/json');
+	    echo json_encode($this->cbr->GetCBR());
+    }
 }

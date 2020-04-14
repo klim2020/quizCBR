@@ -19,6 +19,26 @@ class CbrHandler extends \Core\Model
 		$this->ic = $ic;
 	}
 
+
+    /**
+     * @param $url
+     * @param array $params
+     * @return array|mixed
+     */
+    private function query($url, $params = [] ) {
+        $data = [];
+
+        try {
+            $xml = simplexml_load_file( $url . '?' . http_build_query( $params ) );
+            $json = json_encode( $xml );
+            $data = json_decode( $json , true );
+        } catch (Exception $e) {
+            $data = ['error' => $e->getMessage()];
+        }
+
+        return $data;
+    }
+
     /**
      * Get all the users as an associative array
      *
@@ -45,11 +65,11 @@ class CbrHandler extends \Core\Model
             $day_before = strtotime("yesterday", $from_unix_time);
             $formatted = date('d/m/Y', $day_before);
             //
-            $dynamic1 = CBR::getDaily([
+            $dynamic1 = $this->query( CBR::DAILY, [
                 'date_req' => $date2,
             ]);
 
-            $dynamic2 = CBR::getDaily([
+            $dynamic2 = $this->query( CBR::DAILY, [
                 'date_req' => $formatted,
             ]);
             foreach ($types as $key){
